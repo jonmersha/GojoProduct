@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Application user profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["buyer", "seller", "delivery"] },
+        "avatar": { "type": "string" },
+        "storeName": { "type": "string" },
+        "bio": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "vehicleType": { "type": "string" },
+        "rating": { "type": "number" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Homemade product listed by a seller",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "seller_id": { "type": "string" },
+        "seller_name": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "availability": { "type": "boolean" }
+      },
+      "required": ["id", "seller_id", "name", "price", "category"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order for products",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "buyer_id": { "type": "string" },
+        "seller_id": { "type": "string" },
+        "delivery_id": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "preparing", "ready", "delivering", "completed", "cancelled"] },
+        "total_amount": { "type": "number" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "buyer_name": { "type": "string" },
+        "seller_name": { "type": "string" },
+        "delivery_name": { "type": "string" },
+        "delivery_address": { "type": "string" },
+        "items": { "type": "string", "description": "JSON string of OrderItem array" }
+      },
+      "required": ["id", "buyer_id", "seller_id", "status", "total_amount", "created_at"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message between users",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sender_id": { "type": "string" },
+        "receiver_id": { "type": "string" },
+        "content": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "sender_id", "receiver_id", "content", "created_at"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Product listings"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders"
+    },
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Chat messages"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+  --color-primary: #E63946; /* Vibrant Red */
+  --color-secondary: #457B9D; /* Deep Blue */
+  --color-accent: #F1FAEE; /* Soft Cream */
+  --color-highlight: #A8DADC; /* Light Blue */
+  --color-gojo-green: #2A9D8F; /* Vibrant Green */
+  --color-gojo-yellow: #E9C46A; /* Warm Yellow */
+  --color-gojo-orange: #F4A261; /* Soft Orange */
+}
+
+@layer base {
+  body {
+    @apply font-sans text-stone-900 antialiased bg-stone-50;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.btn-primary {
+  @apply bg-gojo-green text-white font-bold py-3 px-6 rounded-2xl shadow-lg hover:opacity-90 transition-all active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-white text-stone-900 border-2 border-stone-200 font-bold py-3 px-6 rounded-2xl hover:border-stone-400 transition-all active:scale-95;
+}
+
+.card-vibrant {
+  @apply bg-white rounded-3xl border-b-4 border-gojo-green/20 shadow-xl overflow-hidden;
+}
+

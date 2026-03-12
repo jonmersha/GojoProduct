@@ -1,0 +1,5 @@
+{
+  "name": "Gojo Product",
+  "description": "A community marketplace for homemade and handcrafted products, empowering home-based entrepreneurs.",
+  "requestFramePermissions": ["geolocation"]
+}
