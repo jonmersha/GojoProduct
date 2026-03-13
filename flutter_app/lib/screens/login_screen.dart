@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,77 +12,79 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   String selectedRole = 'buyer';
-  bool isSubmitting = false;
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthService>(context, listen: false);
+    final auth = Provider.of<AuthService>(context);
 
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.all(24),
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.black, Color(0xFF1A1A1A)],
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Icon(LucideIcons.shoppingBag, size: 80, color: Colors.white),
+            const SizedBox(height: 24),
             const Text(
               'Gojo Marketplace',
               style: TextStyle(
+                color: Colors.white,
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 fontStyle: FontStyle.italic,
-                fontFamily: 'Georgia',
               ),
             ),
             const SizedBox(height: 8),
             const Text(
-              'Traditional flavors, modern convenience.',
-              style: TextStyle(color: Colors.grey),
+              'Your local marketplace in Ethiopia',
+              style: TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 48),
-            const Text(
-              'CHOOSE YOUR ROLE',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _roleButton('buyer', Icons.shopping_bag, 'Buyer'),
-                const SizedBox(width: 12),
-                _roleButton('seller', Icons.store, 'Seller'),
-                const SizedBox(width: 12),
-                _roleButton('delivery', Icons.truck, 'Delivery'),
-              ],
-            ),
-            const SizedBox(height: 48),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton.icon(
-                onPressed: isSubmitting ? null : () async {
-                  setState(() => isSubmitting = true);
-                  try {
-                    await auth.signInWithGoogle(selectedRole);
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Login failed: $e')),
-                    );
-                  } finally {
-                    setState(() => isSubmitting = false);
-                  }
-                },
-                icon: const Icon(Icons.login),
-                label: Text(isSubmitting ? 'SIGNING IN...' : 'CONTINUE WITH GOOGLE'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                children: [
+                  const Text(
+                    'Select your role',
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _roleButton('buyer', LucideIcons.user),
+                      const SizedBox(width: 12),
+                      _roleButton('seller', LucideIcons.store),
+                      const SizedBox(width: 12),
+                      _roleButton('delivery', LucideIcons.truck),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton.icon(
+                      onPressed: () => auth.signInWithGoogle(selectedRole),
+                      icon: Image.network(
+                        'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                        height: 24,
+                      ),
+                      label: const Text('Continue with Google'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -90,29 +93,26 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _roleButton(String id, IconData icon, String label) {
-    final isSelected = selectedRole == id;
+  Widget _roleButton(String role, IconData icon) {
+    final isSelected = selectedRole == role;
     return GestureDetector(
-      onTap: () => setState(() => selectedRole = id),
+      onTap: () => setState(() => selectedRole = role),
       child: Container(
-        width: 100,
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? Colors.black : Colors.grey[200]!),
-          boxShadow: isSelected ? [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8)] : [],
+          color: isSelected ? Colors.white : Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           children: [
-            Icon(icon, color: isSelected ? Colors.white : Colors.grey),
-            const SizedBox(height: 8),
+            Icon(icon, color: isSelected ? Colors.black : Colors.white),
+            const SizedBox(height: 4),
             Text(
-              label,
+              role[0].toUpperCase() + role.substring(1),
               style: TextStyle(
+                color: isSelected ? Colors.black : Colors.white,
                 fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? Colors.white : Colors.grey,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           ],
