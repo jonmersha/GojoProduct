@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Product, User } from '../types';
-import { Plus, Package, DollarSign, Trash2, Edit3, Image as ImageIcon, Truck, Star } from 'lucide-react';
+import { Plus, Package, DollarSign, Trash2, Edit3, Image as ImageIcon, Truck, Star, Upload, X } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
@@ -11,6 +11,8 @@ const SellerDashboard: React.FC = () => {
   const [deliveryPartners, setDeliveryPartners] = useState<User[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
@@ -48,6 +50,29 @@ const SellerDashboard: React.FC = () => {
     } finally {
       setIsUpgrading(false);
     }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (limit to 500KB for Firestore base64 storage)
+    if (file.size > 500 * 1024) {
+      alert('Image size must be less than 500KB');
+      return;
+    }
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewProduct({ ...newProduct, image: reader.result as string });
+      setIsUploading(false);
+    };
+    reader.onerror = () => {
+      console.error('Failed to read file');
+      setIsUploading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   if (user?.role === 'buyer') {
@@ -189,57 +214,100 @@ const SellerDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-serif italic font-bold text-stone-900">Add New Product</h3>
               <button onClick={() => setIsAdding(false)} className="text-stone-400 hover:text-stone-900">
-                <Trash2 size={20} />
+                <X size={24} />
               </button>
             </div>
 
             <form onSubmit={handleAddProduct} className="flex flex-col gap-4">
-              <input 
-                type="text" 
-                placeholder="Product Name" 
-                required
-                className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/5"
-                value={newProduct.name}
-                onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-              />
-              <textarea 
-                placeholder="Description" 
-                rows={3}
-                className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/5"
-                value={newProduct.description}
-                onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-              />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-stone-400 ml-1">Product Image</label>
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full aspect-video bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-stone-900 transition-all overflow-hidden group relative"
+                >
+                  {newProduct.image ? (
+                    <>
+                      <img src={newProduct.image} alt="Preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-stone-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Upload className="text-white" size={24} />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-stone-400 shadow-sm">
+                        <Upload size={20} />
+                      </div>
+                      <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">
+                        {isUploading ? 'Uploading...' : 'Upload Image'}
+                      </span>
+                    </>
+                  )}
+                </div>
                 <input 
-                  type="number" 
-                  step="0.01"
-                  placeholder="Price" 
+                  type="file" 
+                  ref={fileInputRef}
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+                <div className="flex items-center gap-2 px-1">
+                  <div className="h-[1px] flex-1 bg-stone-100"></div>
+                  <span className="text-[10px] font-bold text-stone-300 uppercase tracking-widest">or use URL</span>
+                  <div className="h-[1px] flex-1 bg-stone-100"></div>
+                </div>
+                <input 
+                  type="url" 
+                  placeholder="Paste image URL" 
+                  className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/5"
+                  value={newProduct.image.startsWith('data:') ? '' : newProduct.image}
+                  onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-stone-400 ml-1">Product Details</label>
+                <input 
+                  type="text" 
+                  placeholder="Product Name" 
                   required
                   className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/5"
-                  value={newProduct.price}
-                  onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                  value={newProduct.name}
+                  onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
                 />
-                <select 
+                <textarea 
+                  placeholder="Description" 
+                  rows={3}
                   className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/5"
-                  value={newProduct.category}
-                  onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                >
-                  <option value="food">Food</option>
-                  <option value="drinks">Drinks</option>
-                  <option value="clothing">Clothing</option>
-                  <option value="crafts">Crafts</option>
-                </select>
+                  value={newProduct.description}
+                  onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    placeholder="Price" 
+                    required
+                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/5"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                  />
+                  <select 
+                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/5"
+                    value={newProduct.category}
+                    onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                  >
+                    <option value="food">Food</option>
+                    <option value="drinks">Drinks</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="crafts">Crafts</option>
+                  </select>
+                </div>
               </div>
-              <input 
-                type="url" 
-                placeholder="Image URL (optional)" 
-                className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900/5"
-                value={newProduct.image}
-                onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
-              />
+
               <button 
                 type="submit"
-                className="w-full bg-stone-900 text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-stone-800 transition-all shadow-lg mt-2"
+                disabled={!newProduct.image || isUploading}
+                className="w-full bg-stone-900 text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-stone-800 transition-all shadow-lg mt-2 disabled:opacity-50"
               >
                 List Product
               </button>
