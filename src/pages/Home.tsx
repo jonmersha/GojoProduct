@@ -98,69 +98,90 @@ const Home: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-6">
+    <div className="flex flex-col md:flex-row gap-8">
+      {/* Sidebar - Category Selection */}
+      <aside className="w-full md:w-64 flex-shrink-0">
+        <div className="sticky top-24 flex flex-col gap-8">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 ml-1">Marketplace</h2>
+            <p className="font-serif italic text-2xl text-stone-900">Categories</p>
+          </div>
+          
+          <nav className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
+                    isActive 
+                      ? 'bg-stone-900 text-white border-stone-900 shadow-lg shadow-stone-900/10' 
+                      : 'bg-white text-stone-500 border-stone-50 hover:border-stone-200'
+                  }`}
+                >
+                  <cat.icon size={16} strokeWidth={isActive ? 2.5 : 2} />
+                  {cat.label}
+                </button>
+              );
+            })}
+          </nav>
+
+          <div className="hidden md:flex flex-col gap-4 p-6 bg-gojo-green rounded-3xl text-white relative overflow-hidden group">
+            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+            <ShoppingBag className="text-gojo-yellow mb-2" size={32} />
+            <h3 className="font-serif italic text-xl leading-tight">Support Local Artisans</h3>
+            <p className="text-[10px] uppercase tracking-widest font-bold opacity-70">Every purchase makes a difference in our community.</p>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col gap-8">
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-gojo-green transition-colors" size={20} />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-stone-900 transition-colors" size={20} />
           <input 
             type="text" 
             placeholder={t('searchPlaceholder')}
-            className="w-full bg-white border-2 border-stone-100 rounded-[1.5rem] pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-gojo-green transition-all shadow-sm"
+            className="w-full bg-white border border-stone-200 rounded-2xl pl-14 pr-6 py-5 text-sm focus:outline-none focus:border-stone-900 focus:ring-4 focus:ring-stone-900/5 transition-all shadow-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`flex items-center gap-2.5 px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
-                selectedCategory === cat.id 
-                  ? 'bg-stone-900 text-white border-stone-900 shadow-xl scale-105' 
-                  : 'bg-white text-stone-500 border-stone-50 hover:border-stone-200'
-              }`}
-            >
-              <cat.icon size={16} />
-              {cat.label}
-            </button>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {isLoading ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-3xl border border-stone-100 aspect-[4/5] animate-pulse" />
+            ))
+          ) : filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                isOwner={user?.id === product.seller_id}
+                onAddToCart={(p) => {
+                  if (!user) {
+                    alert(t('loginToOrder'));
+                  } else {
+                    setSelectedProduct(p);
+                  }
+                }}
+                onToggleAvailability={handleToggleAvailability}
+              />
+            ))
+          ) : (
+            <div className="col-span-full py-24 flex flex-col items-center justify-center text-stone-400 gap-8">
+              <div className="w-24 h-24 rounded-full bg-white border border-stone-100 flex items-center justify-center shadow-sm">
+                <Search size={32} className="text-stone-200" />
+              </div>
+              <div className="text-center flex flex-col gap-2">
+                <p className="font-serif italic text-3xl text-stone-900">{t('noProducts')}</p>
+                <p className="text-xs font-bold uppercase tracking-widest opacity-60">Try adjusting your search or category</p>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {isLoading ? (
-          Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-[2rem] shadow-sm border border-stone-100 aspect-[4/5] animate-pulse" />
-          ))
-        ) : filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <ProductCard 
-              key={product.id} 
-              product={product} 
-              isOwner={user?.id === product.seller_id}
-              onAddToCart={(p) => {
-                if (!user) {
-                  alert(t('loginToOrder'));
-                } else {
-                  setSelectedProduct(p);
-                }
-              }}
-              onToggleAvailability={handleToggleAvailability}
-            />
-          ))
-        ) : (
-          <div className="col-span-full py-20 flex flex-col items-center justify-center text-stone-400 gap-6">
-            <div className="w-24 h-24 rounded-full bg-stone-100 flex items-center justify-center shadow-inner">
-              <Search size={40} className="text-stone-300" />
-            </div>
-            <div className="text-center flex flex-col gap-1">
-              <p className="font-serif italic text-2xl text-stone-900">{t('noProducts')}</p>
-              <p className="text-sm font-medium">Try adjusting your search or category</p>
-            </div>
-          </div>
-        )}
       </div>
 
       {selectedProduct && (

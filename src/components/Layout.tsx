@@ -39,16 +39,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-stone-50 flex flex-col">
-      <header className="bg-white border-b border-stone-200 sticky top-0 z-50 shadow-sm">
+      <header className="bg-white/80 backdrop-blur-md border-b border-stone-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center gap-8">
-              <NavLink to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gojo-green rounded-lg flex items-center justify-center text-white font-bold shadow-md">G</div>
-                <h1 className="text-xl font-serif italic text-stone-900 font-bold tracking-tight hidden sm:block">{t('appName')}</h1>
+          <div className="flex justify-between h-20 items-center">
+            <div className="flex items-center gap-12">
+              <NavLink to="/" className="flex items-center gap-3 group">
+                <div className="w-10 h-10 bg-stone-900 rounded-xl flex items-center justify-center text-white font-bold shadow-xl group-hover:scale-110 transition-transform duration-500">G</div>
+                <h1 className="text-2xl font-serif italic text-stone-900 font-bold tracking-tight hidden sm:block">{t('appName')}</h1>
               </NavLink>
 
-              <nav className="hidden md:flex items-center gap-1">
+              <nav className="hidden md:flex items-center gap-2">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
@@ -56,13 +56,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       key={item.path}
                       to={item.path}
                       className={cn(
-                        "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2",
+                        "px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all flex items-center gap-2.5",
                         isActive 
-                          ? "text-gojo-green bg-gojo-green/5" 
-                          : "text-stone-500 hover:text-stone-900 hover:bg-stone-50"
+                          ? "text-stone-900 bg-stone-100" 
+                          : "text-stone-400 hover:text-stone-900 hover:bg-stone-50"
                       )}
                     >
-                      <item.icon size={16} strokeWidth={isActive ? 2.5 : 2} />
+                      <item.icon size={14} strokeWidth={isActive ? 2.5 : 2} />
                       {item.label}
                     </NavLink>
                   );
@@ -70,19 +70,19 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </nav>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-3 sm:gap-6">
               <div className="relative">
                 <button 
                   onClick={() => setShowLangMenu(!showLangMenu)}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-stone-100 transition-colors text-stone-600"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-stone-50 transition-colors text-stone-400 hover:text-stone-900"
                 >
                   <Globe size={18} />
-                  <span className="text-[10px] font-bold uppercase hidden sm:inline">{language}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:inline">{language}</span>
                   <ChevronDown size={14} className={cn("transition-transform", showLangMenu && "rotate-180")} />
                 </button>
                 
                 {showLangMenu && (
-                  <div className="absolute right-0 mt-2 w-32 bg-white border border-stone-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200 z-50">
+                  <div className="absolute right-0 mt-3 w-40 bg-white border border-stone-100 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 z-50 p-1">
                     {languages.map((lang) => (
                       <button
                         key={lang.id}
@@ -91,8 +91,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                           setShowLangMenu(false);
                         }}
                         className={cn(
-                          "w-full text-left px-4 py-2 text-xs font-medium hover:bg-stone-50 transition-colors",
-                          language === lang.id ? "text-gojo-green bg-gojo-green/5 font-bold" : "text-stone-600"
+                          "w-full text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all",
+                          language === lang.id ? "text-stone-900 bg-stone-50" : "text-stone-400 hover:text-stone-900 hover:bg-stone-50"
                         )}
                       >
                         {lang.label}
@@ -103,14 +103,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </div>
 
               {user ? (
-                <NavLink to="/profile" className="flex items-center gap-2 pl-2 border-l border-stone-100">
-                  <div className="w-8 h-8 rounded-full bg-gojo-yellow flex items-center justify-center text-stone-800 font-bold text-sm shadow-inner">
+                <NavLink to="/profile" className="flex items-center gap-3 pl-6 border-l border-stone-100 group">
+                  <div className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 font-bold text-sm shadow-sm group-hover:border-stone-200 transition-colors">
                     {user.name?.[0] || 'U'}
                   </div>
-                  <span className="text-xs font-bold text-stone-700 hidden lg:block">{user.name}</span>
+                  <div className="hidden lg:flex flex-col">
+                    <span className="text-[9px] uppercase tracking-widest text-stone-400 font-bold">Account</span>
+                    <span className="text-xs font-bold text-stone-900">{user.name}</span>
+                  </div>
                 </NavLink>
               ) : (
-                <NavLink to="/login" className="text-xs font-bold uppercase tracking-widest text-gojo-green hover:text-gojo-green/80 transition-colors">
+                <NavLink to="/login" className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-900 bg-stone-100 px-6 py-3 rounded-xl hover:bg-stone-200 transition-all">
                   {t('signIn')}
                 </NavLink>
               )}
