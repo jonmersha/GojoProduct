@@ -1,18 +1,26 @@
 import React from 'react';
 import { Product } from '../types';
 import { useLanguage } from '../context/LanguageContext';
-import { ShoppingCart, Tag } from 'lucide-react';
+import { ShoppingCart, Tag, Eye, EyeOff } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
+  isOwner?: boolean;
   onAddToCart?: (product: Product) => void;
+  onToggleAvailability?: (productId: string, currentStatus: boolean) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ 
+  product, 
+  isOwner, 
+  onAddToCart, 
+  onToggleAvailability 
+}) => {
   const { t } = useLanguage();
+  const isAvailable = product.availability !== false;
 
   return (
-    <div className="bg-white rounded-[2rem] border border-stone-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group">
+    <div className={`bg-white rounded-[2rem] border border-stone-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group ${!isAvailable ? 'opacity-60 grayscale-[0.5]' : ''}`}>
       <div className="aspect-square bg-stone-50 relative overflow-hidden">
         {product.image ? (
           <img 
@@ -29,6 +37,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-2xl text-sm font-bold text-stone-900 shadow-lg border border-white/20">
           ${product.price.toFixed(2)}
         </div>
+        
+        {!isAvailable && (
+          <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-[2px] flex items-center justify-center">
+            <span className="bg-white/90 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-stone-900 shadow-xl">
+              Unavailable
+            </span>
+          </div>
+        )}
       </div>
       
       <div className="p-5 flex flex-col gap-3">
@@ -52,12 +68,33 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
             <span className="text-xs text-stone-700 font-bold">{product.seller_name || 'Seller'}</span>
           </div>
           
-          <button 
-            onClick={() => onAddToCart?.(product)}
-            className="ml-auto bg-stone-900 text-white p-3 rounded-2xl hover:bg-gojo-green transition-all shadow-md active:scale-90"
-          >
-            <ShoppingCart size={18} />
-          </button>
+          <div className="ml-auto flex items-center gap-2">
+            {isOwner && (
+              <button
+                onClick={() => onToggleAvailability?.(product.id, isAvailable)}
+                className={`p-2.5 rounded-xl transition-all shadow-sm ${
+                  isAvailable 
+                    ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' 
+                    : 'bg-stone-100 text-stone-400 hover:bg-stone-200'
+                }`}
+                title={isAvailable ? 'Disable product' : 'Enable product'}
+              >
+                {isAvailable ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+            )}
+            
+            <button 
+              onClick={() => isAvailable && onAddToCart?.(product)}
+              disabled={!isAvailable}
+              className={`p-3 rounded-2xl transition-all shadow-md active:scale-90 ${
+                isAvailable 
+                  ? 'bg-stone-900 text-white hover:bg-gojo-green' 
+                  : 'bg-stone-100 text-stone-300 cursor-not-allowed'
+              }`}
+            >
+              <ShoppingCart size={18} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

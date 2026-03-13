@@ -5,7 +5,7 @@ import { Product, Order } from '../types';
 import ProductCard from '../components/ProductCard';
 import { Search, Coffee, Utensils, Shirt, Palette, Home as HomeIcon, X, MapPin, ShoppingBag } from 'lucide-react';
 import { db } from '../firebase';
-import { collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, onSnapshot, orderBy, updateDoc, doc } from 'firebase/firestore';
 
 const Home: React.FC = () => {
   const { user } = useAuth();
@@ -82,6 +82,16 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleToggleAvailability = async (productId: string, currentStatus: boolean) => {
+    try {
+      await updateDoc(doc(db, 'products', productId), {
+        availability: !currentStatus
+      });
+    } catch (error) {
+      console.error('Firestore Error (toggle availability):', error);
+    }
+  };
+
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -129,6 +139,7 @@ const Home: React.FC = () => {
             <ProductCard 
               key={product.id} 
               product={product} 
+              isOwner={user?.id === product.seller_id}
               onAddToCart={(p) => {
                 if (!user) {
                   alert(t('loginToOrder'));
@@ -136,6 +147,7 @@ const Home: React.FC = () => {
                   setSelectedProduct(p);
                 }
               }}
+              onToggleAvailability={handleToggleAvailability}
             />
           ))
         ) : (
