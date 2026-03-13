@@ -27,32 +27,32 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const String firestoreDatabaseId = '(default)';
+  static const String firestoreDatabaseId = 'ai-studio-62c8bd19-b811-4395-8222-f2982fdc90dd';
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA-EXAMPLE-KEY',
-    authDomain: 'gojo-marketplace.firebaseapp.com',
-    projectId: 'gojo-marketplace',
-    storageBucket: 'gojo-marketplace.appspot.com',
-    messagingSenderId: '1234567890',
-    appId: '1:1234567890:web:abcdef123456',
-    measurementId: 'G-ABCDEF1234',
+    apiKey: 'AIzaSyB4dutrdz81MZ2ykfQExTR1rnfn3iH7ZOo',
+    authDomain: 'besheger-apps.firebaseapp.com',
+    projectId: 'besheger-apps',
+    storageBucket: 'besheger-apps.firebasestorage.app',
+    messagingSenderId: '129694048718',
+    appId: '1:129694048718:web:f181e3326bc2d4d3a64b9f',
+    measurementId: '',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA-EXAMPLE-KEY',
-    appId: '1:1234567890:android:abcdef123456',
-    messagingSenderId: '1234567890',
-    projectId: 'gojo-marketplace',
-    storageBucket: 'gojo-marketplace.appspot.com',
+    apiKey: 'AIzaSyB4dutrdz81MZ2ykfQExTR1rnfn3iH7ZOo',
+    appId: '1:129694048718:android:f181e3326bc2d4d3a64b9f', // Placeholder for android appId
+    messagingSenderId: '129694048718',
+    projectId: 'besheger-apps',
+    storageBucket: 'besheger-apps.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA-EXAMPLE-KEY',
-    appId: '1:1234567890:ios:abcdef123456',
-    messagingSenderId: '1234567890',
-    projectId: 'gojo-marketplace',
-    storageBucket: 'gojo-marketplace.appspot.com',
+    apiKey: 'AIzaSyB4dutrdz81MZ2ykfQExTR1rnfn3iH7ZOo',
+    appId: '1:129694048718:ios:f181e3326bc2d4d3a64b9f', // Placeholder for ios appId
+    messagingSenderId: '129694048718',
+    projectId: 'besheger-apps',
+    storageBucket: 'besheger-apps.firebasestorage.app',
     iosBundleId: 'com.example.gojoMarketplace',
   );
 
