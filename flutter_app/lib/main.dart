@@ -28,13 +28,24 @@ class GojoApp extends StatelessWidget {
         title: 'Gojo Marketplace',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          textTheme: GoogleFonts.interTextTheme(),
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            elevation: 0,
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF1A4D2E),
+            primary: const Color(0xFF1A4D2E),
+            secondary: const Color(0xFFF27D26),
           ),
+          textTheme: GoogleFonts.interTextTheme(),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFF1A1A1A),
+            elevation: 0,
+            titleTextStyle: GoogleFonts.playfairDisplay(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1A1A1A),
+            ),
+          ),
+          scaffoldBackgroundColor: const Color(0xFFF5F5F4),
         ),
         home: const AuthWrapper(),
       ),

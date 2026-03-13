@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -18,77 +19,130 @@ class _LoginScreenState extends State<LoginScreen> {
     final auth = Provider.of<AuthService>(context);
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.black, Color(0xFF1A1A1A)],
+      body: Stack(
+        children: [
+          // Background Image with Overlay
+          Positioned.fill(
+            child: Image.network(
+              'https://images.unsplash.com/photo-1511317558626-64490e7ee89a?q=80&w=1000&auto=format&fit=crop',
+              fit: BoxFit.cover,
+              referrerPolicy: ReferrerPolicy.noReferrer,
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(LucideIcons.shoppingBag, size: 80, color: Colors.white),
-            const SizedBox(height: 24),
-            const Text(
-              'Gojo Marketplace',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF1A4D2E).withOpacity(0.8),
+                    const Color(0xFF1A1A1A).withOpacity(0.95),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'Your local marketplace in Ethiopia',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            const SizedBox(height: 48),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Select your role',
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+                  const Spacer(),
+                  // Logo
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: const Icon(LucideIcons.shoppingBag, size: 60, color: Colors.white),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
+                  Text(
+                    'GOJO',
+                    style: GoogleFonts.playfairDisplay(
+                      color: Colors.white,
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 8,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'MARKETPLACE',
+                    style: GoogleFonts.inter(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 4,
+                    ),
+                  ),
+                  const SizedBox(height: 64),
+                  // Role Selection
+                  Text(
+                    'SELECT YOUR ROLE',
+                    style: GoogleFonts.inter(
+                      color: Colors.white.withOpacity(0.4),
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _roleButton('buyer', LucideIcons.user),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 16),
                       _roleButton('seller', LucideIcons.store),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 16),
                       _roleButton('delivery', LucideIcons.truck),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 48),
+                  // Google Sign In
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 60,
                     child: ElevatedButton.icon(
                       onPressed: () => auth.signInWithGoogle(selectedRole),
                       icon: Image.network(
                         'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
                         height: 24,
                       ),
-                      label: const Text('Continue with Google'),
+                      label: Text(
+                        'CONTINUE WITH GOOGLE',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
                   ),
+                  const Spacer(),
+                  Text(
+                    'Empowering Ethiopian Artisans',
+                    style: GoogleFonts.playfairDisplay(
+                      color: Colors.white.withOpacity(0.5),
+                      fontStyle: FontStyle.italic,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -97,22 +151,30 @@ class _LoginScreenState extends State<LoginScreen> {
     final isSelected = selectedRole == role;
     return GestureDetector(
       onTap: () => setState(() => selectedRole = role),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected ? Colors.white : Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? Colors.white : Colors.white.withOpacity(0.1),
+          ),
+          boxShadow: isSelected
+              ? [BoxShadow(color: Colors.white.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10))]
+              : [],
         ),
         child: Column(
           children: [
-            Icon(icon, color: isSelected ? Colors.black : Colors.white),
-            const SizedBox(height: 4),
+            Icon(icon, color: isSelected ? Colors.black : Colors.white, size: 24),
+            const SizedBox(height: 8),
             Text(
-              role[0].toUpperCase() + role.substring(1),
-              style: TextStyle(
+              role.toUpperCase(),
+              style: GoogleFonts.inter(
                 color: isSelected ? Colors.black : Colors.white,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
               ),
             ),
           ],

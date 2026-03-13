@@ -51,6 +51,18 @@ class DjangoService {
     throw Exception('Failed to load products');
   }
 
+  Future<void> addProduct(Map<String, dynamic> productData) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/products/'),
+      headers: await _headers,
+      body: jsonEncode(productData),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Failed to add product: ${response.body}');
+    }
+  }
+
   Future<void> updateProductAvailability(String productId, bool availability) async {
     final response = await http.patch(
       Uri.parse('$baseUrl/api/products/$productId/'),
